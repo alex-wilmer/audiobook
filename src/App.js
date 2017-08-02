@@ -12,7 +12,9 @@ let ctx = new AudioContext()
 export default class extends React.Component {
   state = { p1: null }
   componentDidMount() {
-    load('/a1.wav').then(p1 => this.setState({ p1 }, this.play))
+    load(process.env.PUBLIC_URL + '/a1.wav').then(p1 =>
+      this.setState({ p1 }, this.play)
+    )
   }
   play = () => {
     if (this.state.p1) {
