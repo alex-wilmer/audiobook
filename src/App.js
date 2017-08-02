@@ -29,7 +29,7 @@ export default class extends React.Component {
     return (
       <div>
         <video autoPlay loop id="video-background" muted playsInline>
-          <source src="https://r2---sn-tt1e7n7l.c.drive.google.com/videoplayback?id=f3e20381082f68b8&itag=18&source=webdrive&requiressl=yes&mm=30&mn=sn-tt1e7n7l&ms=nxu&mv=m&pl=17&sc=yes&ttl=transient&ei=1lqBWfakB4XhugKtq4OwAg&susci=o-AJ64gZ5L5m8P4lBG_GXK1DA7e0oIsZPkT_sB8dDq1PPuMnk&driveid=0B-jmbGSNcVIWcTc4anRMeW8yMW8&app=explorer&mime=video/mp4&lmt=1501649549759432&mt=1501649510&ip=23.233.64.137&ipbits=0&expire=1501653222&cp=QVNFU0dfUlJQQ1hOOmgxWkk0QWxOcHRW&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,pl,sc,ttl,ei,susci,driveid,app,mime,lmt,cp&signature=8F9545C9ADD2C2B8F0010DA5077050CC8F7466B1.6B316C6B220642B147677FA15205C78B70CAA4B0&key=ck2&cpn=l5MPefncDlMlN17N&c=WEB&cver=1.20170731" />
+          <source src="https://r2---sn-tt1e7n7l.c.drive.google.com/videoplayback?id=f3e20381082f68b8&itag=18&source=webdrive&requiressl=yes&mm=30&mn=sn-tt1e7n7l&ms=nxu&mv=m&pl=17&sc=yes&ttl=transient&ei=1lqBWZm1E8K0ugLXsZvACg&susci=o-AFt6G7bCDBAz0ChU7rmfMVzDRfOE_6rnt6BagrExTWzOqjI&driveid=0B-jmbGSNcVIWcTc4anRMeW8yMW8&app=explorer&mime=video/mp4&lmt=1501649549759432&mt=1501649510&ip=23.233.64.137&ipbits=0&expire=1501653222&cp=QVNFU0dfUlJQQ1hOOmgxWkk0QWxOcHRW&sparams=ip,ipbits,expire,id,itag,source,requiressl,mm,mn,ms,mv,pl,sc,ttl,ei,susci,driveid,app,mime,lmt,cp&signature=432F3953464C7C518E30BF9E904AAF8A7D58AAE3.21B032052C1839C1C15BFAB2D657396A042FF040&key=ck2&cpn=9NpkrWTkaYqyM_7_&c=WEB&cver=1.20170731" />
         </video>
       </div>
     )
