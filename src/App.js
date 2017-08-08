@@ -58,7 +58,9 @@ export default class extends React.Component {
     let buffers = await Promise.all([
       load(process.env.PUBLIC_URL + `/s1.wav`),
       load(process.env.PUBLIC_URL + `/s1t.wav`),
-      load(process.env.PUBLIC_URL + `/weeds.wav`)
+      load(process.env.PUBLIC_URL + `/weeds.wav`),
+      load(process.env.PUBLIC_URL + `/weeds.wav`),
+      load(process.env.PUBLIC_URL + `/s3.wav`)
     ])
     let vids = await Promise.all([
       fetch(process.env.PUBLIC_URL + `/water.mov`)
@@ -68,6 +70,12 @@ export default class extends React.Component {
         .then(r => r.blob())
         .then(v => URL.createObjectURL(v)),
       fetch(process.env.PUBLIC_URL + `/weeds.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/weeds.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/ice.mov`)
         .then(r => r.blob())
         .then(v => URL.createObjectURL(v))
     ])
