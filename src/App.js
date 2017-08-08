@@ -1,6 +1,7 @@
 import React from 'react'
 import load from 'audio-loader'
 import WebAudioScheduler from 'web-audio-scheduler'
+import Loader from './Loader'
 import './app.css'
 
 let ctx = new AudioContext()
@@ -19,19 +20,38 @@ sched.on('stop', () => {
 
 let secondsPerBeat = 60.0 / 100
 
-let V = props =>
-  <video autoPlay loop className="video-background" muted playsInline>
-    <source src={props.src} />
-  </video>
+class V extends React.Component {
+  el = null
+  componentWillReceiveProps(next) {
+    if (this.props.src !== next.src) {
+      this.el.load()
+      this.el.play()
+    }
+  }
+  render() {
+    return (
+      <video
+        ref={el => (this.el = el)}
+        autoPlay
+        loop
+        className="video-background"
+        muted
+        playsInline
+      >
+        <source src={this.props.src} />
+      </video>
+    )
+  }
+}
 
 export default class extends React.Component {
   state = {
     loading: true,
     buffers: [],
-    vid: null,
+    vids: [],
     current: 0,
     transition: false,
-    step: 0,
+    step: -1,
     beat: 0
   }
   async componentDidMount() {
@@ -40,12 +60,18 @@ export default class extends React.Component {
       load(process.env.PUBLIC_URL + `/s1t.wav`),
       load(process.env.PUBLIC_URL + `/weeds.wav`)
     ])
-    // let v = await fetch(process.env.PUBLIC_URL + `/water.mov`).then(r =>
-    //   r.blob()
-    // )
-    // let vid = URL.createObjectURL(v)
-    // this.setState({ buffers, loading: false, vid })
-    this.setState({ buffers, loading: false })
+    let vids = await Promise.all([
+      fetch(process.env.PUBLIC_URL + `/water.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/water.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/weeds.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v))
+    ])
+    this.setState({ buffers, vids, loading: false })
   }
   song = e => {
     let t0 = e.playbackTime
@@ -56,7 +82,7 @@ export default class extends React.Component {
     if (this.state.transition && this.state.beat === 0) {
       this.setState({ transition: false, step: this.state.step + 1 })
       sched.insert(t0 + secondsPerBeat * 11.5, () =>
-        this.setState({ step: this.state.step + 1 })
+        this.setState({ step: this.state.step + 1, loading: false })
       )
     }
   }
@@ -77,19 +103,29 @@ export default class extends React.Component {
   }
   render() {
     return (
-      <div>
-        <h1>
-          {this.state.beat % 6}
-        </h1>
-        {this.state.loading ? 'loading' : ''}
-        <button onClick={() => sched.start(this.song)}>start</button>
-        <button onClick={() => sched.stop(true)}>stop</button>
-        {!this.state.transition &&
-          <button onClick={() => this.setState({ transition: true })}>
-            transition
-          </button>}
-        {this.state.transition && <span>transitionining</span>}
-        {/* {this.state.vid && <V src={this.state.vid} />} */}
+      <div
+        className="root"
+        onClick={() => {
+          if (this.state.step > -1) {
+            this.setState({ transition: true, loading: true })
+          }
+        }}
+      >
+        <Loader loading={this.state.loading} />
+        {!this.state.loading &&
+          this.state.step === -1 &&
+          <div className="container">
+            <div className="title">AUDIOGRAMS</div>
+            <div
+              className="title play"
+              onClick={() =>
+                this.setState({ step: 0 }, () => sched.start(this.song))}
+            >
+              PLAY
+            </div>
+            <div className="title info">CLICK TO CYCLE THROUGH AUDIOGRAMS</div>
+          </div>}
+        {this.state.step > -1 && <V src={this.state.vids[this.state.step]} />}
       </div>
     )
   }

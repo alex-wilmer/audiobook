@@ -1,10 +1,51 @@
+html,
+body,
+#root,
+.root {
+  height: 100vh;
+}
+
 body {
   margin: 0;
   padding: 0;
   /*  Background fallback in case of IE8 & down, or in case video doens't load, such as with slower connections  */
-  background: #333;
+  background: #000;
   background-attachment: fixed;
   background-size: cover;
+}
+
+* {
+  user-select: none;
+}
+
+.container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.title {
+  font-family: 'Saira', sans-serif;
+  color: rgb(255, 0, 215);
+  font-size: 60px;
+  text-shadow: 0px 0px 17px rgba(255, 0, 215, 1);
+}
+
+.title.info {
+  margin-top: 15px;
+  font-size: 20px;
+}
+
+.title.play {
+  cursor: pointer;
+  font-size: 35px;
+  transition: all 0.2s ease;
+}
+
+.title.play:hover {
+  color: white;
 }
 
 /* The only rule that matters */
