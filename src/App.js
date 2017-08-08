@@ -18,11 +18,6 @@ sched.on('stop', () => {
 })
 
 let secondsPerBeat = 60.0 / 100
-let sl = secondsPerBeat * 12
-let p1L = secondsPerBeat * 24
-let p2L = secondsPerBeat * 48
-
-// let wavs = ['water', 'weeds']
 
 let V = props =>
   <video autoPlay loop className="video-background" muted playsInline>
@@ -35,12 +30,15 @@ export default class extends React.Component {
     buffers: [],
     vid: null,
     current: 0,
-    transition: false
+    transition: false,
+    step: 0,
+    beat: 0
   }
   async componentDidMount() {
     let buffers = await Promise.all([
       load(process.env.PUBLIC_URL + `/s1.wav`),
-      load(process.env.PUBLIC_URL + `/s1t.wav`)
+      load(process.env.PUBLIC_URL + `/s1t.wav`),
+      load(process.env.PUBLIC_URL + `/weeds.wav`)
     ])
     // let v = await fetch(process.env.PUBLIC_URL + `/water.mov`).then(r =>
     //   r.blob()
@@ -51,27 +49,38 @@ export default class extends React.Component {
   }
   song = e => {
     let t0 = e.playbackTime
-    sched.insert(t0 + 0.0, e => this.section(e, 0))
-    if (!this.state.transition) {
-      sched.insert(t0 + sl, this.song)
-    } else {
-      sched.insert(t0 + sl, e => this.section(e, 1))
-      sched.insert(t0 + sl * 2, this.song)
-      this.setState({ transition: false })
+
+    sched.insert(t0, e => this.section(e, this.state.step, this.state.beat))
+    sched.insert(t0 + secondsPerBeat, this.song)
+
+    if (this.state.transition && this.state.beat === 0) {
+      this.setState({ transition: false, step: this.state.step + 1 })
+      sched.insert(t0 + secondsPerBeat * 11.5, () =>
+        this.setState({ step: this.state.step + 1 })
+      )
     }
   }
-  section = (e, p) => {
+  section = (e, step, beat) => {
+    let offset = secondsPerBeat * beat
     let t0 = e.playbackTime
+    let t1 = e.playbackTime + secondsPerBeat
+
     let amp = ctx.createGain()
     let source = ctx.createBufferSource()
-    source.buffer = this.state.buffers[p]
+    source.buffer = this.state.buffers[step]
     source.connect(ctx.destination)
-    source.start(t0)
+    source.start(t0, offset)
+    source.stop(t1)
     amp.connect(masterGain)
+
+    this.setState({ beat: (beat + 1) % 12 })
   }
   render() {
     return (
       <div>
+        <h1>
+          {this.state.beat % 6}
+        </h1>
         {this.state.loading ? 'loading' : ''}
         <button onClick={() => sched.start(this.song)}>start</button>
         <button onClick={() => sched.stop(true)}>stop</button>
