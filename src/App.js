@@ -88,9 +88,9 @@ export default class extends React.Component {
     sched.insert(t0 + secondsPerBeat, this.song)
 
     if (this.state.transition && this.state.beat === 0) {
-      this.setState({ transition: false, step: this.state.step + 1 })
+      this.setState({ transition: false, step: (this.state.step + 1) % 5 })
       sched.insert(t0 + secondsPerBeat * 11.5, () =>
-        this.setState({ step: this.state.step + 1, loading: false })
+        this.setState({ step: (this.state.step + 1) % 5, loading: false })
       )
     }
   }

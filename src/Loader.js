@@ -24,7 +24,8 @@ let style = loading => ({
   justifyContent: 'center',
   transition: 'opacity 0.2s ease',
   opacity: loading ? 1 : 0,
-  pointerEvents: 'none'
+  pointerEvents: 'none',
+  backgroundColor: 'rgba(0, 0, 0, 0.7)'
 })
 
 export default ({ loading }) =>
