@@ -58,9 +58,12 @@ export default class extends React.Component {
     let buffers = await Promise.all([
       load(process.env.PUBLIC_URL + `/s1.wav`),
       load(process.env.PUBLIC_URL + `/s1t.wav`),
-      load(process.env.PUBLIC_URL + `/weeds.wav`),
-      load(process.env.PUBLIC_URL + `/weeds.wav`),
-      load(process.env.PUBLIC_URL + `/s3.wav`)
+      load(process.env.PUBLIC_URL + `/s2.wav`),
+      load(process.env.PUBLIC_URL + `/s2t.wav`),
+      load(process.env.PUBLIC_URL + `/s3.wav`),
+      load(process.env.PUBLIC_URL + `/s3t.wav`),
+      load(process.env.PUBLIC_URL + `/s4.wav`),
+      load(process.env.PUBLIC_URL + `/s4.wav`)
     ])
     let vids = await Promise.all([
       fetch(process.env.PUBLIC_URL + `/water.mov`)
@@ -77,6 +80,12 @@ export default class extends React.Component {
         .then(v => URL.createObjectURL(v)),
       fetch(process.env.PUBLIC_URL + `/ice.mov`)
         .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/ice.mov`)
+        .then(r => r.blob())
+        .then(v => URL.createObjectURL(v)),
+      fetch(process.env.PUBLIC_URL + `/dimension.mov`)
+        .then(r => r.blob())
         .then(v => URL.createObjectURL(v))
     ])
     this.setState({ buffers, vids, loading: false })
@@ -88,9 +97,9 @@ export default class extends React.Component {
     sched.insert(t0 + secondsPerBeat, this.song)
 
     if (this.state.transition && this.state.beat === 0) {
-      this.setState({ transition: false, step: (this.state.step + 1) % 5 })
+      this.setState({ transition: false, step: (this.state.step + 1) % 8 })
       sched.insert(t0 + secondsPerBeat * 11.5, () =>
-        this.setState({ step: (this.state.step + 1) % 5, loading: false })
+        this.setState({ step: (this.state.step + 1) % 8, loading: false })
       )
     }
   }
