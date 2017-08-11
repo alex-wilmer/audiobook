@@ -18,6 +18,8 @@ sched.on('stop', () => {
   masterGain = null
 })
 
+let grams = ['water', 'weeds', 'ice', 'dimension']
+
 let secondsPerBeat = 60.0 / 100
 
 class V extends React.Component {
@@ -55,39 +57,28 @@ export default class extends React.Component {
     beat: 0
   }
   async componentDidMount() {
-    let buffers = await Promise.all([
-      load(process.env.PUBLIC_URL + `/s1.wav`),
-      load(process.env.PUBLIC_URL + `/s1t.wav`),
-      load(process.env.PUBLIC_URL + `/s2.wav`),
-      load(process.env.PUBLIC_URL + `/s2t.wav`),
-      load(process.env.PUBLIC_URL + `/s3.wav`),
-      load(process.env.PUBLIC_URL + `/s3t.wav`),
-      load(process.env.PUBLIC_URL + `/s4.wav`),
-      load(process.env.PUBLIC_URL + `/s4.wav`)
-    ])
-    let vids = await Promise.all([
-      fetch(process.env.PUBLIC_URL + `/water.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/water.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/weeds.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/weeds.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/ice.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/ice.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v)),
-      fetch(process.env.PUBLIC_URL + `/dimension.mov`)
-        .then(r => r.blob())
-        .then(v => URL.createObjectURL(v))
-    ])
+    let buffers = await Promise.all(
+      grams.reduce(
+        (p, c) => [
+          ...p,
+          load(process.env.PUBLIC_URL + `/${c}.wav`),
+          load(process.env.PUBLIC_URL + `/${c}_ft.wav`)
+        ],
+        []
+      )
+    )
+    let vids = await Promise.all(
+      grams.reduce(
+        (p, c) => [
+          ...p,
+          fetch(process.env.PUBLIC_URL + `/${c}.mov`)
+            .then(r => r.blob())
+            .then(v => URL.createObjectURL(v))
+        ],
+        []
+      )
+    )
+
     this.setState({ buffers, vids, loading: false })
   }
   song = e => {
@@ -97,9 +88,15 @@ export default class extends React.Component {
     sched.insert(t0 + secondsPerBeat, this.song)
 
     if (this.state.transition && this.state.beat === 0) {
-      this.setState({ transition: false, step: (this.state.step + 1) % 8 })
+      this.setState({
+        transition: false,
+        step: (this.state.step + 1) % this.state.buffers.length
+      })
       sched.insert(t0 + secondsPerBeat * 11.5, () =>
-        this.setState({ step: (this.state.step + 1) % 8, loading: false })
+        this.setState({
+          step: (this.state.step + 1) % this.state.buffers.length,
+          loading: false
+        })
       )
     }
   }
@@ -132,17 +129,68 @@ export default class extends React.Component {
         {!this.state.loading &&
           this.state.step === -1 &&
           <div className="container">
-            <div className="title">AUDIOGRAMS</div>
+            <div className="title logo">AUDIOGRAMS</div>
             <div
-              className="title play"
-              onClick={() =>
-                this.setState({ step: 0 }, () => sched.start(this.song))}
+              className="title info"
+              style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                justifyContent: 'space-around'
+              }}
             >
-              PLAY
+              <div
+                className="preview all"
+                onClick={() =>
+                  this.setState({ step: 0 }, () => sched.start(this.song))}
+              >
+                <video autoPlay loop muted playsInline />
+                PLAY ALL
+              </div>
+              {grams.map((x, i) =>
+                <div
+                  className="preview"
+                  key={x}
+                  onClick={() =>
+                    this.setState({ step: i * 2 }, () =>
+                      sched.start(this.song)
+                    )}
+                >
+                  <video autoPlay loop muted playsInline>
+                    <source src={this.state.vids[i]} />
+                  </video>
+                  {x.toUpperCase()}
+                </div>
+              )}
             </div>
-            <div className="title info">CLICK TO CYCLE THROUGH AUDIOGRAMS</div>
           </div>}
-        {this.state.step > -1 && <V src={this.state.vids[this.state.step]} />}
+        {this.state.step > -1 &&
+          <div
+            className="header"
+            onClick={e => {
+              e.stopPropagation()
+              this.setState({ step: -1 }, () => sched.stop(true))
+            }}
+          >
+            <div style={{ paddingLeft: '10px' }}>
+              <span
+                style={{ transform: 'rotate(180deg)', display: 'inline-block' }}
+              >
+                ➦
+              </span>{' '}
+              BACK TO MENU
+            </div>
+            <div
+              style={{
+                marginLeft: 'auto',
+                paddingRight: '10px',
+                color: 'rgb(243, 255, 23)'
+              }}
+            >
+              CLICK ON VIDEO TO BEGIN TRANSITION TO NEXT GRAM
+            </div>
+          </div>}
+        {this.state.step > -1 &&
+          <V src={this.state.vids[~~(this.state.step / 2)]} />}
       </div>
     )
   }
