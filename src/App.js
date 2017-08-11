@@ -129,6 +129,9 @@ export default class extends React.Component {
         {!this.state.loading &&
           this.state.step === -1 &&
           <div className="container">
+            <a href="https://github.com/alex-wilmer/audiobook" target="_blank">
+              <i className="fa fa-github" />
+            </a>
             <div className="title logo">AUDIOGRAMS</div>
             <div
               className="title info"
