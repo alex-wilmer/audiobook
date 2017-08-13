@@ -18,7 +18,7 @@ sched.on('stop', () => {
   masterGain = null
 })
 
-let grams = ['water', 'weeds', 'ice', 'dimension']
+let grams = ['water', 'weeds', 'ice', 'dimension', 'gears']
 
 let secondsPerBeat = 60.0 / 100
 
@@ -113,7 +113,7 @@ export default class extends React.Component {
     source.stop(t1)
     amp.connect(masterGain)
 
-    this.setState({ beat: (beat + 1) % 12 })
+    this.setState({ beat: (beat + 1) % (step !== 8 ? 12 : 24) })
   }
   render() {
     return (
