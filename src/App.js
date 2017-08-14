@@ -18,7 +18,7 @@ sched.on('stop', () => {
   masterGain = null
 })
 
-let grams = ['water', 'weeds', 'ice', 'dimension', 'gears']
+let grams = ['water', 'weeds', 'ice', 'dimension', 'gears', 'nails']
 
 let secondsPerBeat = 60.0 / 100
 
@@ -92,11 +92,13 @@ export default class extends React.Component {
         transition: false,
         step: (this.state.step + 1) % this.state.buffers.length
       })
-      sched.insert(t0 + secondsPerBeat * 11.5, () =>
-        this.setState({
-          step: (this.state.step + 1) % this.state.buffers.length,
-          loading: false
-        })
+      sched.insert(
+        t0 + secondsPerBeat * (this.state.step < 8 ? 11.5 : 23.5),
+        () =>
+          this.setState({
+            step: (this.state.step + 1) % this.state.buffers.length,
+            loading: false
+          })
       )
     }
   }
@@ -113,7 +115,7 @@ export default class extends React.Component {
     source.stop(t1)
     amp.connect(masterGain)
 
-    this.setState({ beat: (beat + 1) % (step !== 8 ? 12 : 24) })
+    this.setState({ beat: (beat + 1) % (step < 8 ? 12 : 24) })
   }
   render() {
     return (
