@@ -18,7 +18,7 @@ sched.on('stop', () => {
   masterGain = null
 })
 
-let grams = ['water', 'weeds', 'ice', 'dimension', 'gears', 'nails']
+let grams = ['water', 'weeds', 'ice', 'dimension', 'gears', 'nails', 'swagger']
 
 let secondsPerBeat = 60.0 / 100
 
@@ -71,7 +71,12 @@ export default class extends React.Component {
       grams.reduce(
         (p, c) => [
           ...p,
-          fetch(process.env.PUBLIC_URL + `/${c}.mov`)
+          fetch(
+            process.env.PUBLIC_URL +
+              `/${c}.${['water', 'weeds', 'dimension', 'swagger'].includes(c)
+                ? 'mp4'
+                : 'mov'}`
+          )
             .then(r => r.blob())
             .then(v => URL.createObjectURL(v))
         ],
@@ -93,7 +98,9 @@ export default class extends React.Component {
         step: (this.state.step + 1) % this.state.buffers.length
       })
       sched.insert(
-        t0 + secondsPerBeat * (this.state.step < 8 ? 11.5 : 23.5),
+        t0 +
+          secondsPerBeat *
+            (this.state.step < 8 || this.state.step > 11 ? 11.5 : 23.5),
         () =>
           this.setState({
             step: (this.state.step + 1) % this.state.buffers.length,
@@ -115,7 +122,9 @@ export default class extends React.Component {
     source.stop(t1)
     amp.connect(masterGain)
 
-    this.setState({ beat: (beat + 1) % (step < 8 ? 12 : 24) })
+    console.log(123, step)
+
+    this.setState({ beat: (beat + 1) % (step < 8 || step > 11 ? 12 : 24) })
   }
   render() {
     return (
